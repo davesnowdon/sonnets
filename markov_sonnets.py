@@ -1,6 +1,13 @@
 import itertools
 from collections import defaultdict
 import random
+import curses
+from curses.ascii import isdigit
+import nltk
+from nltk.corpus import cmudict
+from string import punctuation
+
+pron_dict = cmudict.dict()
 
 f = open('pg1041.txt')
 
@@ -22,8 +29,12 @@ for word1, word2 in [words[i:i+2] for i in range(len(words) - 1)]:
 
 
 def get_num_syllables(phrase):
-    return len(' '.join(phrase)) / 6 + len(phrase)
+    num_syllables = [nsyl(w.strip(punctuation)) for w in phrase]
+    return sum(num_syllables)
 
+def nsyl(word):
+    global pron_dict
+    return max([len(list(y for y in x if isdigit(y[-1]))) for x in pron_dict[word.lower()]])
 
 def try_get_shakesperian_phrase():
     phrase = [random.choice(pairs.keys())]
@@ -43,7 +54,7 @@ def get_shakesperian_phrase():
         except:
             continue
 
-
-for _ in range(14):
-    phrase = get_shakesperian_phrase()
-    print ' '.join([phrase[0].capitalize()] + phrase[1:])
+if __name__ == "__main__":
+    for _ in range(14):
+        phrase = get_shakesperian_phrase()
+        print ' '.join([phrase[0].capitalize()] + phrase[1:])
